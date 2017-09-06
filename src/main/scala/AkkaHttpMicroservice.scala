@@ -26,6 +26,7 @@ case class IpPairSummary(distance: Option[Double], ip1Info: IpInfo, ip2Info: IpI
 object IpPairSummary {
   def apply(ip1Info: IpInfo, ip2Info: IpInfo): IpPairSummary = IpPairSummary(calculateDistance(ip1Info, ip2Info), ip1Info, ip2Info)
 
+
   private def calculateDistance(ip1Info: IpInfo, ip2Info: IpInfo): Option[Double] = {
     (ip1Info.lat, ip1Info.lon, ip2Info.lat, ip2Info.lon) match {
       case (Some(lat1), Some(lon1), Some(lat2), Some(lon2)) =>
@@ -58,8 +59,7 @@ trait Service extends Protocols {
   def config: Config
   val logger: LoggingAdapter
 
-  lazy val ipApiConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =
-    Http().outgoingConnection(config.getString("services.ip-api.host"), config.getInt("services.ip-api.port"))
+  lazy val ipApiConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =  Http().outgoingConnection(config.getString("services.ip-api.host"), config.getInt("services.ip-api.port"))
 
   def ipApiRequest(request: HttpRequest): Future[HttpResponse] = Source.single(request).via(ipApiConnectionFlow).runWith(Sink.head)
 
